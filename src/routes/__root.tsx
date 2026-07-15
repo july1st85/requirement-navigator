@@ -12,18 +12,24 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "../lib/store";
+import { AuthProvider } from "../lib/auth";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md">
-        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted-foreground">Error 404</div>
+        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted-foreground">
+          Error 404
+        </div>
         <h1 className="mt-3 text-5xl font-bold tracking-tight">Halaman tidak ditemukan.</h1>
         <p className="mt-4 text-sm text-muted-foreground">
           Alamat yang Anda tuju tidak tersedia atau telah dipindahkan.
         </p>
         <div className="mt-6">
-          <Link to="/" className="inline-block bg-foreground text-background px-5 py-2.5 text-sm font-semibold">
+          <Link
+            to="/"
+            className="inline-block bg-foreground text-background px-5 py-2.5 text-sm font-semibold"
+          >
             Kembali ke Dashboard →
           </Link>
         </div>
@@ -42,7 +48,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md">
-        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-destructive">Error</div>
+        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-destructive">
+          Error
+        </div>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Halaman gagal dimuat.</h1>
         <p className="mt-3 text-sm text-muted-foreground">
           Terjadi kesalahan tak terduga. Coba muat ulang atau kembali ke Dashboard.
@@ -120,9 +128,11 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <StoreProvider>
-        <Outlet />
-      </StoreProvider>
+      <AuthProvider>
+        <StoreProvider>
+          <Outlet />
+        </StoreProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

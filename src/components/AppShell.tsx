@@ -1,5 +1,7 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
+
+import { RequireAuth, useAuth } from "@/lib/auth";
 
 const nav = [
   { to: "/", label: "Dashboard", num: "01" },
@@ -10,32 +12,48 @@ const nav = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  return (
+    <RequireAuth>
+      <AppShellInner>{children}</AppShellInner>
+    </RequireAuth>
+  );
+}
+
+function AppShellInner({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate({ to: "/login", replace: true });
+  };
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-[220px_1fr] bg-background text-foreground">
       <aside className="hairline-r hidden md:flex flex-col sticky top-0 h-screen">
         <div className="hairline-b px-5 py-5">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Alat QA</div>
+          <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            Alat QA
+          </div>
           <div className="mt-2 text-[15px] font-bold leading-tight">
-            AI Test<br />Scenario<br />Generator
+            AI Test
+            <br />
+            Scenario
+            <br />
+            Generator
           </div>
         </div>
         <nav className="flex-1 py-4">
           {nav.map((item) => {
-            const active =
-              item.to === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.to);
+            const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 className={
                   "flex items-baseline gap-3 px-5 py-2.5 text-[13px] hairline-b " +
-                  (active
-                    ? "bg-foreground text-background font-semibold"
-                    : "hover:bg-secondary")
+                  (active ? "bg-foreground text-background font-semibold" : "hover:bg-secondary")
                 }
               >
                 <span className="font-mono text-[10px] opacity-60 w-5">{item.num}</span>
@@ -44,14 +62,34 @@ export function AppShell({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="hairline-t px-5 py-4 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
-          v0.9.3 — Prototipe
+        <div className="hairline-t px-5 py-4">
+          {user && (
+            <div className="mb-3 min-w-0">
+              <div className="text-[13px] font-semibold truncate">{user.name ?? "Pengguna"}</div>
+              <div className="text-[11px] text-muted-foreground truncate">{user.email}</div>
+            </div>
+          )}
+          <button
+            onClick={handleLogout}
+            className="w-full border border-foreground px-3 py-2 text-[11px] font-mono uppercase tracking-widest hover:bg-foreground hover:text-background"
+          >
+            Keluar
+          </button>
+          <div className="mt-3 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+            v0.9.3 — Prototipe
+          </div>
         </div>
       </aside>
 
       {/* Mobile top bar */}
       <div className="md:hidden hairline-b flex items-center justify-between px-4 py-3">
         <div className="text-sm font-bold">AI Test Scenario Generator</div>
+        <button
+          onClick={handleLogout}
+          className="text-[10px] font-mono uppercase tracking-widest border border-foreground px-2.5 py-1.5"
+        >
+          Keluar
+        </button>
       </div>
       <div className="md:hidden hairline-b flex overflow-x-auto">
         {nav.map((item) => {
@@ -96,9 +134,7 @@ export function PageHeader({
               {eyebrow}
             </div>
           )}
-          <h1 className="text-3xl md:text-5xl font-bold leading-[0.95] tracking-tight">
-            {title}
-          </h1>
+          <h1 className="text-3xl md:text-5xl font-bold leading-[0.95] tracking-tight">{title}</h1>
           {description && (
             <p className="mt-4 text-sm md:text-base text-muted-foreground max-w-2xl">
               {description}
