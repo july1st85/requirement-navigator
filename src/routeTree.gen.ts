@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as IntegrationsRouteImport } from './routes/integrations'
 import { Route as IndexRouteImport } from './routes/index'
@@ -17,6 +18,11 @@ import { Route as IndexRouteImport } from './routes/index'
 const TemplatesRoute = TemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProjectsRoute = ProjectsRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/integrations': typeof IntegrationsRoute
   '/projects': typeof ProjectsRoute
+  '/settings': typeof SettingsRoute
   '/templates': typeof TemplatesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/integrations': typeof IntegrationsRoute
   '/projects': typeof ProjectsRoute
+  '/settings': typeof SettingsRoute
   '/templates': typeof TemplatesRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/integrations': typeof IntegrationsRoute
   '/projects': typeof ProjectsRoute
+  '/settings': typeof SettingsRoute
   '/templates': typeof TemplatesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/integrations' | '/projects' | '/templates'
+  fullPaths: '/' | '/integrations' | '/projects' | '/settings' | '/templates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/integrations' | '/projects' | '/templates'
-  id: '__root__' | '/' | '/integrations' | '/projects' | '/templates'
+  to: '/' | '/integrations' | '/projects' | '/settings' | '/templates'
+  id:
+    | '__root__'
+    | '/'
+    | '/integrations'
+    | '/projects'
+    | '/settings'
+    | '/templates'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   IntegrationsRoute: typeof IntegrationsRoute
   ProjectsRoute: typeof ProjectsRoute
+  SettingsRoute: typeof SettingsRoute
   TemplatesRoute: typeof TemplatesRoute
 }
 
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/templates'
       fullPath: '/templates'
       preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects': {
@@ -106,6 +129,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   IntegrationsRoute: IntegrationsRoute,
   ProjectsRoute: ProjectsRoute,
+  SettingsRoute: SettingsRoute,
   TemplatesRoute: TemplatesRoute,
 }
 export const routeTree = rootRouteImport
